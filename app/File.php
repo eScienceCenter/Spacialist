@@ -605,8 +605,8 @@ class File extends Model
     }
 
     public static function add3d($query, $or = false) {
-        $mimeTypes = ['model/vnd.collada+xml', 'model/gltf-binary', 'model/gltf+json', 'chemical/x-pdb'];
-        $extensions = ['.dae', '.obj', '.pdb', '.gltf', '.fbx'];
+        $mimeTypes = ['model/vnd.collada+xml', 'model/gltf-binary', 'model/gltf+json', 'chemical/x-pdb', 'application/sla'];
+        $extensions = ['.dae', '.obj', '.pdb', '.gltf', '.fbx', 'stl', 'gcode'];
         return self::getCategory($mimeTypes, $extensions, null, $query, $or);
     }
 
@@ -815,8 +815,8 @@ class File extends Model
 
     public function is3d() {
         $is = false;
-        $mimeTypes = ['model/vnd.collada+xml', 'model/gltf-binary', 'model/gltf+json'];
-        $extensions = ['.dae', '.obj', '.pdb', '.gltf', '.fbx'];
+        $mimeTypes = ['model/vnd.collada+xml', 'model/gltf-binary', 'model/gltf+json', 'application/sla'];
+        $extensions = ['.dae', '.obj', '.pdb', '.gltf', '.fbx', 'stl', 'gcode'];
         $is = in_array($this->mime_type, $mimeTypes);
         if($is) return true;
         foreach($extensions as $ext) {

@@ -54,11 +54,13 @@
     import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
     import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
     import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+	import { GCodeLoader } from 'three/examples/jsm/loaders/GCodeLoader.js';
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
     import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
     import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2.js';
     import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
     import { PDBLoader } from 'three/examples/jsm/loaders/PDBLoader.js';
+    import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
     import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
     import * as dat from 'three/examples/jsm/libs/dat.gui.module.js';
     import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
@@ -131,14 +133,16 @@
                 this.activeMesh.position.set(px, py, pz);
             },
             getFileType: function(file) {
-                if(file.mime_type == 'model/vnd.collada+xml') {
-                    return 'dae'
-                }
-                if(file.mime_type == 'model/gltf-binary' || file.mime_type == 'model/gltf+json') {
-                    return 'gltf'
-                }
-                if(file.mime_type == 'chemical/x-pdb') {
-                    return 'pdb'
+                switch(file.mime_type) {
+                    case 'model/vnd.collada+xml':
+                        return 'dae';
+                    case 'model/gltf-binary':
+                    case 'model/gltf+json':
+                        return 'gltf';
+                    case 'chemical/x-pdb':
+                        return 'pdb';
+                    case 'application/sla':
+                        return 'stl';
                 }
                 let extension = this.getFileExtension(file.name);
                 switch(extension) {
@@ -152,6 +156,10 @@
                         return 'obj';
                     case 'fbx':
                         return 'fbx';
+                    case 'stl':
+                        return 'stl';
+                    case 'gcode':
+                        return 'gcode';
                     default:
                         return undefined;
                 }
@@ -302,6 +310,12 @@
                         break;
                     case 'pdb':
                         this.loadProteinDb(file);
+                        break;
+                    case 'stl':
+                        this.loadStl(file);
+                        break;
+                    case 'gcode':
+                        this.loadGcode(file);
                         break;
                 }
             },
@@ -562,6 +576,34 @@
             loadFbx: function(file) {
                 const url = file.url;
                 const loader = new FBXLoader();
+                loader.load(url, object => {
+                    this.addModelToScene(object);
+                }, event => {
+                    this.updateProgress(event);
+                }, event => {
+                });
+            },
+            loadStl: function(file) {
+                const url = file.url;
+                const loader = new STLLoader();
+                loader.load(url, geometry => {
+                    const material = new MeshPhongMaterial({
+                        color: 0xAA5555,
+                        specular: 0x111111,
+                        shininess: 200,
+                        vertexColors: geometry.hasColors,
+                        opacity: geometry.hasColors ? geometry.alpha : 1,
+                    });
+                    const object = new Mesh(geometry, material);
+                    this.addModelToScene(object);
+                }, event => {
+                    this.updateProgress(event);
+                }, event => {
+                });
+            },
+            loadGcode: function(file) {
+                const url = file.url;
+                const loader = new GCodeLoader();
                 loader.load(url, object => {
                     this.addModelToScene(object);
                 }, event => {

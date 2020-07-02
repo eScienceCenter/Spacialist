@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - Caching attribute data in GIS layer styles
 - Chart overlays to GIS layer styling
 - Display multiple attributes in GIS view as labels
+- Support STL and gcode files in 3D viewer
 ### Fixed
 - Unnecessary initializing snapping to features on the map (snapping is now initialized when editing mode is activated and onyl for the current visible part of the map)
 - Drag & Drop in entity tree
