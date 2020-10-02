@@ -53,6 +53,19 @@ class User extends Authenticatable implements JWTSubject
         $this->permissions = $permissions;
     }
 
+    public function isModerated() {
+        $moderated = true;
+
+        foreach($this->roles as $r) {
+            if(!$r->moderated) {
+                $moderated = false;
+                break;
+            }
+        }
+
+        return $moderated;
+    }
+
     public function preferences() {
         return $this->hasMany('App\UserPreference');
     }

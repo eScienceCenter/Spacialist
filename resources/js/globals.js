@@ -56,6 +56,23 @@ Vue.prototype.$can = function(permissionString, oneOf) {
     }
 }
 
+Vue.prototype.$moderated = function() {
+    const user = this.$auth.user();
+    if(!user) return true;
+
+    let mod = true;
+
+    for(let i=0; i<user.roles.length; i++) {
+        const r = user.roles[i];
+        if(!r.moderated) {
+            mod = false;
+            break;
+        }
+    }
+
+    return mod;
+}
+
 Vue.prototype.$updateLanguage = function() {
     if(Vue.prototype.$auth.check()) {
         Vue.i18n.locale = this.$getPreference('prefs.gui-language');

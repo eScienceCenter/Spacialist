@@ -2,7 +2,7 @@
     <div>
         <div class="input-group">
             <div class="input-group-prepend">
-                <button type="button" class="btn btn-outline-secondary" :disabled="disabled" @click="toggleList()">
+                <button type="button" class="btn btn-outline-secondary" @click="toggleList()">
                     <div v-show="!expanded">
                         <i class="fas fa-fw fa-caret-up"></i>
                         <span v-if="entries.length">
@@ -15,7 +15,7 @@
                 </button>
             </div>
             <input type="text" class="form-control" :disabled="disabled" v-model="input" />
-            <div class="input-group-append">
+            <div class="input-group-append" v-if="!disabled">
                 <button type="button" class="btn btn-success" @click="addListEntry()">
                     <i class="fas fa-fw fa-plus"></i>
                 </button>
@@ -24,7 +24,7 @@
         <ol class="mt-2" v-if="expanded && entries.length">
             <li v-for="(l, i) in entries">
                 {{ l }}
-                <a href="#" class="text-danger" @click="removeListEntry(i)">
+                <a href="#" class="text-danger" v-if="!disabled" @click="removeListEntry(i)">
                     <i class="fas fa-fw fa-trash"></i>
                 </a>
             </li>

@@ -3,8 +3,8 @@
         <div class="input-group">
             <div class="input-group-prepend" uib-dropdown>
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle" :disabled="disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span v-if="startLabel">
-                        {{ $t(`main.entity.attributes.${startLabel}`) }}
+                    <span v-if="value.startLabel">
+                        {{ $t(`main.entity.attributes.${value.startLabel}`) }}
                     </span>
                     <span v-else>
                     </span>
@@ -15,15 +15,15 @@
                     </a>
                 </ul>
             </div>
-            <input type="number" step="1" min="0" pattern="[0-9]+" class="form-control text-center" :disabled="disabled" aria-label="" @input="onInput('start', start)" v-model.number="start">
+            <input type="number" step="1" min="0" pattern="[0-9]+" class="form-control text-center" :disabled="disabled" aria-label="" @input="onInput('start', value.start)" v-model.number="value.start">
             <div class="input-group-prepend input-group-append">
                 <span class="input-group-text">-</span>
             </div>
-            <input type="number" step="1" min="0" pattern="[0-9]+" class="form-control text-center" :disabled="disabled" aria-label="" @input="onInput('end', end)" v-model.number="end">
+            <input type="number" step="1" min="0" pattern="[0-9]+" class="form-control text-center" :disabled="disabled" aria-label="" @input="onInput('end', value.end)" v-model.number="value.end">
             <div class="input-group-append">
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle" :disabled="disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span v-if="endLabel">
-                        {{ $t(`main.entity.attributes.${endLabel}`) }}
+                    <span v-if="value.endLabel">
+                        {{ $t(`main.entity.attributes.${value.endLabel}`) }}
                     </span>
                     <span v-else>
                     </span>
@@ -38,9 +38,9 @@
         <multiselect class="pt-2"
             label="concept_url"
             track-by="id"
-            @input="onInput('epoch', epoch)"
+            @input="onInput('epoch', value.epoch)"
             v-if="hasEpochList"
-            v-model="epoch"
+            v-model="value.epoch"
             :allowEmpty="true"
             :closeOnSelect="true"
             :customLabel="translateLabel"
@@ -101,7 +101,7 @@
                 this.onChange(field, value);
             },
             setLabel(field, value) {
-                this[field] = value;
+                this.value[field] = value;
                 this.onInput(field, value);
             },
             translateLabel(element, prop) {
@@ -111,11 +111,6 @@
         data () {
             return {
                 labels: ['BC', 'AD'],
-                startLabel: this.value.startLabel,
-                start: this.value.start,
-                endLabel: this.value.endLabel,
-                end: this.value.end,
-                epoch: this.value.epoch,
             }
         },
         computed: {

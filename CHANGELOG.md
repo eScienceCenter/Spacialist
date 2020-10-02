@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## 0.8 - Helgö (Unreleased)
+### Added
+- Support to moderate additions/changes made by specific (moderated) roles
+### Fixed
+- Some attribute changes not saved, when one was a delete operation
 
 ## 0.7.4
 ### Added

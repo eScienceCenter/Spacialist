@@ -133,6 +133,8 @@ const de = {
         password: 'Passwort',
         'remember-me': 'Eingeloggt bleiben',
         description: 'Beschreibung',
+        moderation: 'Moderiert',
+        moderation_description: 'Änderungen von moderierten Rollen können nur durch andere Benutzer ohne moderierte Rolle abgelehnt/angenommen werden',
         roles: 'Rollen',
         permissions: 'Berechtigungen',
         'added-at': 'Hinzugefügt',
@@ -272,7 +274,16 @@ const de = {
                     title: 'Neue Rolle'
                 }
             },
-            'add-permission-placeholder': 'Berechtigungen hinzufügen'
+            'add-permission-placeholder': 'Berechtigungen hinzufügen',
+            moderation: {
+                locked_state_info: 'Dieses Attribute ist gesperrt, da die Änderungen moderiert werden müssen und noch nicht angenommen wurden.',
+                view_modified_data: 'Geänderte Daten anzeigen',
+                view_original_data: 'Originaldaten anzeigen',
+                accept_changes: 'Änderungen annehmen',
+                deny_changes: 'Änderungen ablehnen',
+                deleted_by: 'Am {ts} von <span class="font-weight-bold"><i class="fas fa-fw fa-user-edit"></i> {name}</span> gelöscht <i class="fas fa-fw fa-trash"></i>',
+                modified_by: 'Am {ts} von <span class="font-weight-bold"><i class="fas fa-fw fa-user-edit"></i> {name}</span> geändert <i class="fas fa-fw fa-edit"></i>',
+            }
         },
         datamodel: {
             toasts: {

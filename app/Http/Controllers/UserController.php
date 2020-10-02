@@ -216,7 +216,8 @@ class UserController extends Controller
         $this->validate($request, [
             'permissions' => 'array',
             'display_name' => 'string',
-            'description' => 'string'
+            'description' => 'string',
+            'moderated' => 'boolean',
         ]);
 
         if(!$this->hasInput($request)) {
@@ -244,6 +245,9 @@ class UserController extends Controller
         }
         if($request->has('description')) {
             $role->description = $request->get('description');
+        }
+        if($request->has('moderated')) {
+            $role->moderated = $request->get('moderated');
         }
         $role->save();
 

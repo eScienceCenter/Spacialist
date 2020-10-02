@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use MStaack\LaravelPostgis\Eloquent\PostgisTrait;
+use App\Traits\ModerationTrait;
 
 class AttributeValue extends Model
 {
     use PostgisTrait;
+    use ModerationTrait;
 
     protected $table = 'attribute_values';
     /**
@@ -45,6 +47,11 @@ class AttributeValue extends Model
 
     protected $postgisFields = [
         'geography_val',
+    ];
+
+    protected $copyOn = [
+        'entity_id',
+        'attribute_id',
     ];
 
     const patchRules = [

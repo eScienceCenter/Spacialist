@@ -133,6 +133,8 @@ const en = {
         password: 'Password',
         'remember-me': 'Remember me',
         description: 'Description',
+        moderation: 'Moderated',
+        moderation_description: 'Moderated roles need a user with privileged role to accept/deny their changes',
         roles: 'Roles',
         permissions: 'Permissions',
         'added-at': 'Added',
@@ -272,7 +274,16 @@ const en = {
                     title: 'New Role'
                 }
             },
-            'add-permission-placeholder': 'Add permissions'
+            'add-permission-placeholder': 'Add permissions',
+            moderation: {
+                locked_state_info: 'This attribute is locked, because it\'s value is still in moderation and not accepted yet.',
+                view_modified_data: 'View modified data',
+                view_original_data: 'View original data',
+                accept_changes: 'Accept changes',
+                deny_changes: 'Deny changes',
+                deleted_by: '<i class="fas fa-fw fa-trash"></i> Deleted by <span class="font-weight-bold"><i class="fas fa-fw fa-user-edit"></i> {name}</span> on {ts}',
+                modified_by: '<i class="fas fa-fw fa-edit"></i> Edited by <span class="font-weight-bold"><i class="fas fa-fw fa-user-edit"></i> {name}</span> on {ts}',
+            }
         },
         datamodel: {
             toasts: {

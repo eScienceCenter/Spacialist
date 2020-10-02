@@ -361,7 +361,8 @@ class ApiUserTest extends TestCase
             ->patch('/api/v1/role/1', [
                 'permissions' => [1, 2],
                 'display_name' => 'NOT Admin',
-                'description' => 'No longer a Admin User'
+                'description' => 'No longer a Admin User',
+                'moderated' => true
             ]);
 
         $role = Role::find(1);
@@ -384,6 +385,7 @@ class ApiUserTest extends TestCase
             'name' => 'admin',
             'display_name' => 'NOT Admin',
             'description' => 'No longer a Admin User',
+            'moderated' => true,
             'created_at' => '2017-12-20 09:47:35',
             'updated_at' => "$role->updated_at"
         ]);

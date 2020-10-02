@@ -171,6 +171,29 @@ class ApiEntityTest extends TestCase
     }
 
     /**
+     * Test getting moderated data of an entity (id=2).
+     *
+     * @return void
+     */
+    public function testEntityDataModeratedEndpoint()
+    {
+        $attr1 = AttributeValue::find(60);
+        $attr2 = AttributeValue::find(61);
+        $attr1->moderate('pending-delete', true);
+        $modAttr2 = $attr2->moderate('pending', false, true);
+        $modAttr2->geography_val = 'POINT(1.23 45.67)';
+        $modAttr2->save();
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token"
+        ])
+            ->get('/api/v1/entity/2/data');
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(3);
+    }
+
+    /**
      * Test getting data of an non-existing entity.
      *
      * @return void
@@ -509,10 +532,10 @@ class ApiEntityTest extends TestCase
     // Testing PATCH requets
 
     /**
-    * Test modifying (add, replace, remove) attributes of an entity (id=4).
-    *
-    * @return void
-    */
+     * Test modifying (add, replace, remove) attributes of an entity (id=4).
+     *
+     * @return void
+     */
     public function testPatchAttributesEndpoint()
     {
         $entity = Entity::with('attributes')->find(4);
@@ -535,17 +558,13 @@ class ApiEntityTest extends TestCase
         ->patch('/api/v1/entity/4/attributes', [
             [
                 'params' => [
-                    'id' => 39,
                     'aid' => 9,
-                    'cid' => 4
                 ],
                 'op' => 'remove'
             ],
             [
                 'params' => [
-                    'id' => 37,
                     'aid' => 11,
-                    'cid' => 4
                 ],
                 'op' => 'replace',
                 'value' => 2
@@ -553,7 +572,6 @@ class ApiEntityTest extends TestCase
             [
                 'params' => [
                     'aid' => 19,
-                    'cid' => 4
                 ],
                 'op' => 'add',
                 'value' => 'Test'
@@ -585,6 +603,145 @@ class ApiEntityTest extends TestCase
                 $this->assertEquals('Test', $attr->value);
             }
         }
+    }
+
+    /**
+     * Test modifying (add, replace, remove) attributes of an entity (id=3) with moderation enabled.
+     *
+     * @return void
+     */
+    public function testPatchAttributesModeratedEndpoint()
+    {
+        $user = User::find(1);
+
+        // set all user roles as moderated
+        foreach($user->roles as $role) {
+            $role->moderated = true;
+            $role->save();
+        }
+
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->withModerated()
+            ->get();
+        $this->assertEquals(6, count($attrs));
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token"
+        ])
+            ->patch('/api/v1/entity/3/attributes', [
+                [
+                    'params' => [
+                        'aid' => 2,
+                    ],
+                    'op' => 'remove'
+                ],
+                [
+                    'params' => [
+                        'aid' => 4,
+                    ],
+                    'op' => 'replace',
+                    'value' => 2
+                ],
+                [
+                    'params' => [
+                        'aid' => 19,
+                    ],
+                    'op' => 'add',
+                    'value' => 'Test'
+                ]
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'id',
+            'name',
+            'entity_type_id',
+            'root_entity_id',
+            'geodata_id',
+            'rank',
+            'lasteditor',
+            'created_at',
+            'updated_at',
+            'parentIds'
+        ]);
+
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->withModerated()
+            ->get();
+        $this->assertEquals(8, count($attrs));
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->onlyModerated()
+            ->get();
+        $this->assertEquals(3, count($attrs));
+    }
+
+    /**
+     * Test accepting/denying a moderated value.
+     *
+     * @return void
+     */
+    public function testHandleModerationEndpoint()
+    {
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->withModerated()
+            ->get();
+        $this->assertEquals(6, count($attrs));
+
+        $attr1 = AttributeValue::where('entity_id', 3)
+            ->where('attribute_id', 2)
+            ->first();
+        $attr2 = AttributeValue::where('entity_id', 3)
+            ->where('attribute_id', 4)
+            ->first();
+        $this->assertEquals(1, $attr2->int_val);
+        $attr1->moderate('pending-delete', true);
+        $updAttr2 = $attr2->moderate('pending', false, true);
+        $updAttr2->int_val = 42;
+        $updAttr2->save();
+        $attr2 = AttributeValue::where('entity_id', 3)
+            ->where('attribute_id', 4)
+            ->onlyModerated()
+            ->first();
+        $this->assertEquals(42, $attr2->int_val);
+
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->withModerated()
+            ->get();
+        $this->assertEquals(7, count($attrs));
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token"
+        ])
+            ->patch('/api/v1/entity/3/attribute/2/moderation', [
+                'action' => 'accept'
+            ]);
+
+        $response->assertStatus(204);
+
+        $this->refreshToken($response);
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token"
+        ])
+            ->patch('/api/v1/entity/3/attribute/4/moderation', [
+                'action' => 'deny'
+            ]);
+
+        $response->assertStatus(204);
+
+        $attrs = AttributeValue::where('entity_id', 3)
+            ->withModerated()
+            ->get();
+        $this->assertEquals(5, count($attrs));
+
+        $attr1 = AttributeValue::where('entity_id', 3)
+            ->where('attribute_id', 2)
+            ->first();
+        $attr2 = AttributeValue::where('entity_id', 3)
+            ->where('attribute_id', 4)
+            ->first();
+        $this->assertNull($attr1);
+        $this->assertEquals(1, $attr2->int_val);
     }
 
     /**
@@ -964,6 +1121,7 @@ class ApiEntityTest extends TestCase
             ['url' => '', 'error' => 'You do not have the permission to add a new entity', 'verb' => 'post'],
             ['url' => '/1/attributes', 'error' => 'You do not have the permission to modify an entity\'s data', 'verb' => 'patch'],
             ['url' => '/1/attribute/13', 'error' => 'You do not have the permission to modify an entity\'s data', 'verb' => 'patch'],
+            ['url' => '/1/attribute/13/moderation', 'error' => 'You do not have the permission to modify an entity\'s data', 'verb' => 'patch'],
             ['url' => '/1/name', 'error' => 'You do not have the permission to modify an entity\'s data', 'verb' => 'patch'],
             ['url' => '/1/rank', 'error' => 'You do not have the permission to modify an entity', 'verb' => 'patch'],
             ['url' => '/1', 'error' => 'You do not have the permission to delete an entity', 'verb' => 'delete'],
@@ -1048,5 +1206,85 @@ class ApiEntityTest extends TestCase
 
             $this->refreshToken($response);
         }
+    }
+    /**
+     *
+     *
+     * @return void
+     */
+    public function testModerationExceptions()
+    {
+        $attr = AttributeValue::find(69);
+        $updAttr = $attr->moderate('pending', false, true);
+        $updAttr->save();
+        $calls = [
+            ['url' => '/1/attributes', 'error' => 'This attribute value does either not exist or is in moderation state.', 'verb' => 'patch', 'data' => [
+                    [
+                        'op' => 'remove',
+                        'params' => ['aid' => 99]
+                    ]
+                ],
+            ],
+            ['url' => '/1/attributes', 'error' => 'There is already a value set for this attribute or it is in moderation state.', 'verb' => 'patch', 'data' => [
+                    [
+                        'op' => 'add',
+                        'params' => ['aid' => 15]
+                    ]
+                ],
+            ],
+            ['url' => '/1/attributes', 'error' => 'This attribute value is in moderation state. Please accept/deny it or ask a user with appropriate permissions to do so.', 'verb' => 'patch', 'data' => [
+                    [
+                        'op' => 'replace',
+                        'params' => ['aid' => 15]
+                    ]
+                ],
+            ],
+            ['url' => '/1/attributes', 'error' => 'Unknown operation', 'verb' => 'patch', 'data' => [
+                    [
+                        'op' => 'not_implemented',
+                        'params' => ['aid' => 15]
+                    ]
+                ],
+            ],
+            ['url' => '/99/attribute/13/moderation', 'error' => 'This entity does not exist', 'verb' => 'patch', 'data' => [
+                'action' => 'accept'
+            ]],
+            ['url' => '/1/attribute/99/moderation', 'error' => 'This attribute does not exist', 'verb' => 'patch', 'data' => [
+                'action' => 'accept'
+            ]],
+            ['url' => '/1/attribute/19/moderation', 'error' => 'This attribute value does not exist', 'verb' => 'patch', 'data' => [
+                'action' => 'accept'
+            ]],
+        ];
+        foreach($calls as $c) {
+            $response = $this->withHeaders([
+                'Authorization' => "Bearer $this->token"
+            ])
+                ->json($c['verb'], '/api/v1/entity' . $c['url'], $c['data']);
+
+            $response->assertStatus(400);
+            $response->assertExactJson([
+                'error' => $c['error']
+            ]);
+
+            $this->refreshToken($response);
+        }
+
+        $attrValue = AttributeValue::where('entity_id', 1)
+            ->where('attribute_id', 15)
+            ->first();
+        $attrValue->moderate('pending-delete');
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer $this->token"
+        ])
+            ->patch('/api/v1/entity/1/attribute/15/moderation', [
+                'action' => 'not_implemented'
+            ]);
+
+        $response->assertStatus(400);
+        $response->assertExactJson([
+            'error' => 'Unsupported moderation action'
+        ]);
     }
 }
