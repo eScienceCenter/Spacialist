@@ -66,7 +66,7 @@ class AttributeValue extends Model
                $this->entity_val ??
                $this->thesaurus_val ??
                json_decode($this->json_val) ??
-               $this->geography_val ??
+               $this->geography_val->toWKT() ??
                $this->dt_val;
     }
 

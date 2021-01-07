@@ -3,11 +3,11 @@
 namespace App\Providers;
 
 use App\Preference;
-use App\ThConcept;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('geography', 'string');
+        \DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('geometry', 'string');
+
+        Paginator::useBootstrap();
+        
         Relation::morphMap([
             'attribute_values' => 'App\AttributeValue'
         ]);

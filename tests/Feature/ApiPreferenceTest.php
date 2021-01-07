@@ -245,7 +245,7 @@ class ApiPreferenceTest extends TestCase
      */
     public function testOtherUserPreferenceEndpoint()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $response = $this->withHeaders([
             'Authorization' => "Bearer $this->token"
@@ -253,7 +253,7 @@ class ApiPreferenceTest extends TestCase
         ->get('/api/v1/preference/' . $user->id);
 
         $response->assertStatus(403);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'You are not allowed to access preferences of another user'
         ]);
     }
@@ -271,7 +271,7 @@ class ApiPreferenceTest extends TestCase
         ->get('/api/v1/preference/99');
 
         $response->assertStatus(400);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'This user does not exist'
         ]);
     }
@@ -286,7 +286,7 @@ class ApiPreferenceTest extends TestCase
         $cnt = UserPreference::count();
         $this->assertEquals($cnt, 0);
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $fields = [
             'pref_id' => 1,
             'user_id' => $user->id,
@@ -365,7 +365,7 @@ class ApiPreferenceTest extends TestCase
                 ->json($c['verb'], '/api/v1/preference' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -392,7 +392,7 @@ class ApiPreferenceTest extends TestCase
                 ]);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

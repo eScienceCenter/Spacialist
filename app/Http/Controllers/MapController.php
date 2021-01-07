@@ -242,12 +242,12 @@ class MapController extends Controller
         $pw = env('DB_PASSWORD');
         $dt = date('dmYHis');
         $tmpFile = '/tmp/export-'.$dt.$suffix;
-        $command = "ogr2ogr -f \"$exptype\" $tmpFile PG:\"host=$host port=$port user=$user dbname=$db password=$pw\" -sql \"$query\"";
+        $command = ['ogr2ogr', '-f', $exptype, $tmpFile, "PG:host=$host port=$port user=$user dbname=$db password='$pw'", '-sql', $query];
         if($srid != '4326') {
-            $command .= " -t_srs EPSG:$srid";
+            array_push($command, '-t_srs', "EPSG:$srid");
         }
         if($exptype == 'CSV') {
-            $command .= " -lco GEOMETRY=$geometry -lco SEPARATOR=$separator -lco LINEFORMAT=LF";
+            array_push($command, '-lco', "GEOMETRY=$geometry", '-lco', "SEPARATOR=$separator", '-lco', 'LINEFORMAT=LF');
         }
         $process = new Process($command);
         $process->run();

@@ -246,7 +246,7 @@ class ApiActivityTest extends TestCase
                 ->json($c['verb'], '/api/v1' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -272,7 +272,7 @@ class ApiActivityTest extends TestCase
                 ->json($c['verb'], '/api/v1' . $c['url']);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App\User;
-
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 abstract class TestCase extends BaseTestCase
@@ -15,6 +15,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
     use WithFaker;
     use DatabaseTransactions;
+    use ArraySubsetAsserts;
 
     protected $connectionsToTransact = [
         'testing'

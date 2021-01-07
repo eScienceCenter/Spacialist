@@ -41,9 +41,7 @@ class AttributeValueTest extends TestCase
     public function testGetAttributeValueById()
     {
         $value = AttributeValue::getValueById(16, 2);
-        $this->assertEquals(8.92, $value->getLng());
-        $this->assertEquals(48.45, $value->getLat());
-        $this->assertNull($value->getAlt());
+        $this->assertEquals('POINT(8.92 48.45)', $value);
 
         $value = AttributeValue::getValueById(99, 2);
         $this->assertNull($value);

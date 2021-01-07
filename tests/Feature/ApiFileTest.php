@@ -98,8 +98,8 @@ class ApiFileTest extends TestCase
             'description' => null,
             'mime_type' => 'image/png',
             'user_id' => 1,
-            'created_at' => '2019-03-08 13:13:11',
-            'updated_at' => '2019-03-08 13:13:11',
+            'created_at' => '2019-03-08T13:13:11.000000Z',
+            'updated_at' => '2019-03-08T13:13:11.000000Z',
             'url' => "/storage/spacialist_screenshot.png",
             'thumb_url' => "/storage/spacialist_screenshot_thumb.jpg",
             'category' => 'image',
@@ -165,8 +165,8 @@ class ApiFileTest extends TestCase
             'description' => 'Edinburgh Castle',
             'mime_type' => 'image/jpeg',
             'user_id' => 1,
-            'created_at' => '2019-03-08 13:13:11',
-            'updated_at' => '2019-03-08 13:13:12',
+            'created_at' => '2019-03-08T13:13:11.000000Z',
+            'updated_at' => '2019-03-08T13:13:12.000000Z',
             'url' => "/storage/test_img_edin.jpg",
             'thumb_url' => "/storage/test_img_edin_thumb.jpg",
             'category' => 'image',
@@ -279,7 +279,7 @@ class ApiFileTest extends TestCase
             ->get('/api/v1/file/7/as_html');
 
         $response->assertStatus(200);
-        $this->assertContains(
+        $this->assertStringContainsString(
             'A test .docx file created in LibreOffice!',
             $response->getContent()
         );
@@ -298,7 +298,7 @@ class ApiFileTest extends TestCase
             ->get('/api/v1/file/5/link_count');
 
         $response->assertStatus(200);
-        $response->assertExactJson([1]);
+        $response->assertSimilarJson([1]);
 
         $this->refreshToken($response);
 
@@ -308,7 +308,7 @@ class ApiFileTest extends TestCase
             ->get('/api/v1/file/1/link_count');
 
         $response->assertStatus(200);
-        $response->assertExactJson([0]);
+        $response->assertSimilarJson([0]);
     }
 
     /**
@@ -325,7 +325,7 @@ class ApiFileTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonCount(1);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             [
                 'id' => 3,
                 'name' => 'text1.txt',
@@ -339,8 +339,8 @@ class ApiFileTest extends TestCase
                 'description' => null,
                 'mime_type' => 'text/plain',
                 'user_id' => 1,
-                'created_at' => '2019-03-08 13:13:11',
-                'updated_at' => '2019-03-08 13:13:11',
+                'created_at' => '2019-03-08T13:13:11.000000Z',
+                'updated_at' => '2019-03-08T13:13:11.000000Z',
                 'category' => 'text',
                 'size' => Storage::size('text1.txt'),
                 'exif' => null,
@@ -396,7 +396,7 @@ class ApiFileTest extends TestCase
             ->get('/api/v1/file/filter/category');
 
         $response->assertStatus(200);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             ['key' => 'image', 'label' => 'Image'],
             ['key' => 'audio', 'label' => 'Audio File'],
             ['key' => 'video', 'label' => 'Video File'],
@@ -427,7 +427,7 @@ class ApiFileTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonCount(2);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'Canon EOS 650D (Canon)',
             'Null',
         ]);
@@ -447,7 +447,7 @@ class ApiFileTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonCount(4);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             ['is' => 'date', 'value' => '2017-06-18'],
             ['is' => 'date', 'value' => '2019-03-08'],
             ['is' => 'year', 'value' => '2017'],
@@ -534,7 +534,7 @@ class ApiFileTest extends TestCase
             'category'
         ]);
 
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'id' => $uplFile->id,
             'name' => 'spacialist_screenshot.0.png',
             'modified' => $uplFile->modified,
@@ -546,8 +546,8 @@ class ApiFileTest extends TestCase
             'description' => $desc,
             'mime_type' => 'image/png',
             'user_id' => 1,
-            'created_at' => "$uplFile->created_at",
-            'updated_at' => "$uplFile->updated_at",
+            'created_at' => $uplFile->created_at->toJSON(),
+            'updated_at' => $uplFile->updated_at->toJSON(),
             'category' => 'image'
         ]);
 
@@ -1278,7 +1278,7 @@ class ApiFileTest extends TestCase
                 ->json($c['verb'], '/api/v1/file' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -1322,7 +1322,7 @@ class ApiFileTest extends TestCase
                 ]);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -1343,7 +1343,7 @@ class ApiFileTest extends TestCase
             ->get('/api/v1/file/1/as_html');
 
         $response->assertStatus(200);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'HTML not supported for file type text/plain'
         ]);
 

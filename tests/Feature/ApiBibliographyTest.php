@@ -100,7 +100,7 @@ class ApiBibliographyTest extends TestCase
             ->get('/api/v1/bibliography/1319/ref_count');
 
         $response->assertStatus(200);
-        $response->assertExactJson([1]);
+        $response->assertSimilarJson([1]);
     }
 
     /**
@@ -211,7 +211,7 @@ class ApiBibliographyTest extends TestCase
             ]);
 
         $response->assertStatus(400);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => "Unexpected character '\\0' at line 10 column 1"
         ]);
     }
@@ -252,7 +252,7 @@ class ApiBibliographyTest extends TestCase
         $this->assertTrue($response->headers->get('content-type') == 'application/x-bibtex');
         $this->assertTrue($response->headers->get('content-disposition') == 'attachment; filename=export.bib');
         $content = $this->getStreamedContent($response);
-        $this->assertContains("@article{Ph:0000,\n    title: {Test Article}\n    author: {PhpUnit}\n    pages: {10-15}\n}\n\n", $content);
+        $this->assertStringContainsString("@article{Ph:0000,\n    title: {Test Article}\n    author: {PhpUnit}\n    pages: {10-15}\n}\n\n", $content);
 
         $this->refreshToken($response);
         $bib = Bibliography::latest()->first();
@@ -347,7 +347,7 @@ class ApiBibliographyTest extends TestCase
                 ->json($c['verb'], '/api/v1/bibliography' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -377,7 +377,7 @@ class ApiBibliographyTest extends TestCase
                 ]);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

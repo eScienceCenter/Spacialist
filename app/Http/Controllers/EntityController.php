@@ -7,6 +7,7 @@ use App\AttributeValue;
 use App\Entity;
 use App\EntityAttribute;
 use App\EntityType;
+use App\Geodata;
 use App\ThConcept;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -366,7 +367,6 @@ class EntityController extends Controller {
                 // for primitive types: just save them to the db
                 case 'stringf':
                 case 'string':
-                case 'geography':
                 case 'iconclass':
                     $attrval->str_val = $value;
                     break;
@@ -431,6 +431,9 @@ class EntityController extends Controller {
                     break;
                 case 'entity':
                     $attrval->entity_val = $value;
+                    break;
+                case 'geography':
+                    $attrval->geography_val = Geodata::parseWkt($value);
                     break;
             }
             $attrval->user_id = $user->id;

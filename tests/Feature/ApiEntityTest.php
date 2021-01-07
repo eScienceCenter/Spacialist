@@ -57,7 +57,7 @@ class ApiEntityTest extends TestCase
             ])
             ->get('/api/v1/entity/1');
 
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'id' => 1,
             'name' => 'Site A',
             'entity_type_id' => 3,
@@ -70,15 +70,15 @@ class ApiEntityTest extends TestCase
                 'name' => "Admin",
                 'nickname' => "admin",
                 'email' => "admin@localhost",
-                'created_at' => "2017-12-20 09:47:36",
-                'updated_at' => "2017-12-20 09:47:36",
+                'created_at' => "2017-12-20T09:47:36.000000Z",
+                'updated_at' => "2017-12-20T09:47:36.000000Z",
                 'deleted_at' => null,
                 'avatar' => null,
                 'avatar_url' => null,
                 'metadata' => null,
             ],
-            'created_at' => '2017-12-20 17:10:34',
-            'updated_at' => '2017-12-31 16:10:56',
+            'created_at' => '2017-12-20T17:10:34.000000Z',
+            'updated_at' => '2017-12-31T16:10:56.000000Z',
             'parentIds' => [1],
             'parentNames' => ['Site A'],
             'comments_count' => 0
@@ -197,7 +197,7 @@ class ApiEntityTest extends TestCase
             ->get('/api/v1/entity/99/data');
 
         $response->assertStatus(400);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'This entity does not exist'
         ]);
     }
@@ -247,7 +247,7 @@ class ApiEntityTest extends TestCase
             ->get('/api/v1/entity/1/data/99');
 
         $response->assertStatus(400);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'This attribute does not exist'
         ]);
     }
@@ -265,7 +265,7 @@ class ApiEntityTest extends TestCase
             ->get('/api/v1/entity/5/parentIds');
 
         $response->assertJsonCount(3);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             1, 2, 5
         ]);
     }
@@ -308,8 +308,8 @@ class ApiEntityTest extends TestCase
                     'bibliography_id' => 1318,
                     'description' => 'See Page 10',
                     'user_id' => 1,
-                    'created_at' => '2019-03-08 13:36:36',
-                    'updated_at' => '2019-03-08 13:36:36',
+                    'created_at' => '2019-03-08T13:36:36.000000Z',
+                    'updated_at' => '2019-03-08T13:36:36.000000Z',
                     'bibliography' => [
                         'id' => 1318
                     ],
@@ -321,8 +321,8 @@ class ApiEntityTest extends TestCase
                     'bibliography_id' => 1319,
                     'description' => 'Picture on left side of page 12',
                     'user_id' => 1,
-                    'created_at' => '2019-03-08 13:36:48',
-                    'updated_at' => '2019-03-08 13:36:48',
+                    'created_at' => '2019-03-08T13:36:48.000000Z',
+                    'updated_at' => '2019-03-08T13:36:48.000000Z',
                     'bibliography' => [
                         'id' => 1319
                     ],
@@ -336,8 +336,8 @@ class ApiEntityTest extends TestCase
                     'bibliography_id' => 1323,
                     'description' => 'Page 10ff is interesting',
                     'user_id' => 1,
-                    'created_at' => '2019-03-08 13:37:09',
-                    'updated_at' => '2019-03-08 13:37:09',
+                    'created_at' => '2019-03-08T13:37:09.000000Z',
+                    'updated_at' => '2019-03-08T13:37:09.000000Z',
                     'bibliography' => [
                         'id' => 1323
                     ],
@@ -644,7 +644,7 @@ class ApiEntityTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'Start date of a time period must not be after it\'s end date'
         ]);
         $this->refreshToken($response);
@@ -673,7 +673,7 @@ class ApiEntityTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'Start date of a time period must not be after it\'s end date'
         ]);
         $this->refreshToken($response);
@@ -702,7 +702,7 @@ class ApiEntityTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'Start date of a time period must not be after it\'s end date'
         ]);
         $this->refreshToken($response);
@@ -1086,7 +1086,7 @@ class ApiEntityTest extends TestCase
         ->delete('/api/v1/entity/99');
 
         $response->assertStatus(400);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'error' => 'This entity does not exist'
         ]);
     }
@@ -1189,7 +1189,7 @@ class ApiEntityTest extends TestCase
                 ->json($c['verb'], $url);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -1259,7 +1259,7 @@ class ApiEntityTest extends TestCase
                 ->json($c['verb'], $url, $data);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

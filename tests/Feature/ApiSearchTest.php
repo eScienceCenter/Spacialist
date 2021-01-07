@@ -561,7 +561,7 @@ class ApiSearchTest extends TestCase
                 ->get('/api/v1/search' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -589,7 +589,7 @@ class ApiSearchTest extends TestCase
                 ->get('/api/v1/search' . $c['url']);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

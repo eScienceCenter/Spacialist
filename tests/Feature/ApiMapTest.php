@@ -195,7 +195,7 @@ class ApiMapTest extends TestCase
                 ]
             )
         );
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'id' => 5,
             'name' => '',
             'url' => '',
@@ -217,12 +217,12 @@ class ApiMapTest extends TestCase
                 'id' => 4,
                 'thesaurus_url' => 'https://spacialist.escience.uni-tuebingen.de/<user-project>/befund#20171220094916',
                 'is_root' => false,
-                'created_at' => '2017-12-20 10:03:15',
-                'updated_at' => '2017-12-20 10:03:15',
+                'created_at' => '2017-12-20T10:03:15.000000Z',
+                'updated_at' => '2017-12-20T10:03:15.000000Z',
             ],
             'color' => '#3E798B',
-            'created_at' => '2017-12-20 10:03:15',
-            'updated_at' => '2017-12-20 10:03:15',
+            'created_at' => '2017-12-20T10:03:15.000000Z',
+            'updated_at' => '2017-12-20T10:03:15.000000Z',
         ]);
     }
 
@@ -290,8 +290,8 @@ class ApiMapTest extends TestCase
             [
                 'id' => 6,
                 'entity' => null,
-                'created_at' => '2019-03-18 09:46:11',
-                'updated_at' => '2019-03-18 09:46:11',
+                'created_at' => '2019-03-18T09:46:11.000000Z',
+                'updated_at' => '2019-03-18T09:46:11.000000Z',
             ],
         ]);
     }
@@ -316,7 +316,7 @@ class ApiMapTest extends TestCase
             'srtext',
             'proj4text',
         ]);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'srid' => 4826,
             'auth_name' => 'EPSG',
             'auth_srid' => 4826,
@@ -385,18 +385,17 @@ class ApiMapTest extends TestCase
                 'Authorization' => "Bearer $this->token"
             ])
             ->get('/api/v1/map/export/1?type=csv&srid=31467');
+
         $response->assertStatus(200);
         $csv = base64_decode($response->getContent());
 
-        // Do not compare whole string, because travis xenial build
-        // ships with gdal 1.11, which does not support round/truncate of numbers
         $rows = str_getcsv($csv, "\n");
         $header = $rows[0];
         $data = str_getcsv($rows[1]);
         $this->assertEquals('X,Y,Z,id,color,created_at,updated_at,user_id', $header);
-        $this->assertEqualsWithDelta(3493381.810734, round(floatval($data[0]), 6), 0.001);
-        $this->assertEqualsWithDelta(5378579.860542, round(floatval($data[1]), 6), 0.001);
-        $this->assertEqualsWithDelta(-52.268126, round(floatval($data[2]), 6), 0.001);
+        $this->assertEqualsWithDelta(3493381.810734, round(floatval($data[0]), 6), 0.99);
+        $this->assertEqualsWithDelta(5378579.860542, round(floatval($data[1]), 6), 0.99);
+        $this->assertEqualsWithDelta(-52.268126, round(floatval($data[2]), 6), 0.49);
         $this->assertEquals('6', $data[3]);
         $this->assertEquals('', $data[4]);
         $this->assertEquals('2019/03/18 09:46:11', $data[5]);
@@ -448,7 +447,7 @@ class ApiMapTest extends TestCase
             'srtext',
             'proj4text',
         ]);
-        $response->assertExactJson([
+        $response->assertSimilarJson([
             'srid' => 4826,
             'auth_name' => 'EPSG',
             'auth_srid' => 4826,
@@ -679,7 +678,7 @@ class ApiMapTest extends TestCase
                 ->json($c['verb'], '/api/v1/map' . $c['url']);
 
             $response->assertStatus(403);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 
@@ -721,7 +720,7 @@ class ApiMapTest extends TestCase
                 ]);
 
             $response->assertStatus(400);
-            $response->assertExactJson([
+            $response->assertSimilarJson([
                 'error' => $c['error']
             ]);
 

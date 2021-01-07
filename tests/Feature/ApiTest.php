@@ -100,11 +100,11 @@ class ApiTest extends TestCase
 
         $response->assertStatus(200);
         $content = $response->decodeResponseJson();
-        $this->assertRegExp('/^\d+$/', $content['time']);
-        $this->assertRegExp('/^[A-Z][a-z]+$/', $content['name']);
-        $this->assertRegExp('/^v\d\.\d\.\d$/', $content['release']);
-        $this->assertRegExp('/^v\d\.\d\.\d \(\w+\)$/', $content['readable']);
-        $this->assertRegExp('/^v\d+\.\d+\.\d+-\w+(-g[a-f0-9]{7})?$/', $content['full']);
+        $this->assertMatchesRegularExpression('/^\d+$/', $content['time']);
+        $this->assertMatchesRegularExpression('/^[A-ZÄÖÜ][a-zäöüß]+$/', $content['name']);
+        $this->assertMatchesRegularExpression('/^v\d\.\d\.\d$/', $content['release']);
+        $this->assertMatchesRegularExpression('/^v\d\.\d\.\d \([A-ZÄÖÜ][a-zäöüß]+\)$/', $content['readable']);
+        $this->assertMatchesRegularExpression('/^v\d\.\d\.\d-[a-zäöüß]+(-g[a-f0-9]{8})?$/', $content['full']);
         $this->assertEquals($content['release'], 'v' . $vi->getMajor() . "." . $vi->getMinor() . "." . $vi->getPatch());
 
         $hash = $vi->getReleaseHash();
